@@ -1,0 +1,125 @@
+_schema-version: "3.2"
+ID: ccn_screens
+version: 0.0.1
+modules:
+- name: ccn_screens-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: ccn_screens-destination-service
+    parameters:
+      content-target: true
+  - name: ccn_screens_html_repo_host
+    parameters:
+      service-key:
+        name: ccn_screens_html_repo_host-key
+  - name: uaa_ccn_screens
+    parameters:
+      service-key:
+        name: uaa_ccn_screens-key
+  parameters:
+    content:
+      subaccount:
+        destinations:
+        - Name: ccn_screens_ccn_screens_html_repo_host
+          ServiceInstanceName: ccn_screens-html5-app-host-service
+          ServiceKeyName: ccn_screens_html_repo_host-key
+          sap.cloud.service: ccn_screens
+        - Authentication: OAuth2UserTokenExchange
+          Name: ccn_screens_uaa_ccn_screens
+          ServiceInstanceName: ccn_screens-xsuaa-service
+          ServiceKeyName: uaa_ccn_screens-key
+          sap.cloud.service: ccn_screens
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: ccn_screens-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: ccn_screens_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - ccnacceptworkflowuimodule.zip
+      name: ccnacceptworkflowuimodule
+      target-path: resources/
+    - artifacts:
+      - project1.zip
+      name: project1
+      target-path: resources/
+    - artifacts:
+      - project2.zip
+      name: project2
+      target-path: resources/
+- name: ccnacceptworkflowuimodule
+  type: html5
+  path: workflow-ui-module
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: project1
+  type: html5
+  path: project1
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: project2
+  type: html5
+  path: project2
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: ccn_screens-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          - Authentication: NoAuthentication
+            Name: northwind
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://services.odata.org
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: ccn_screens-destination-service
+    service-plan: lite
+- name: ccn_screens_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: ccn_screens-html5-app-host-service
+    service-plan: app-host
+- name: uaa_ccn_screens
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: ccn_screens-xsuaa-service
+    service-plan: application
+parameters:
+  deploy_mode: html5-repo

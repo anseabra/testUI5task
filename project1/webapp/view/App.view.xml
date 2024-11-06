@@ -1,0 +1,30 @@
+<mvc:View controllerName="project1.controller.App"
+xmlns:html="http://www.w3.org/1999/xhtml"
+xmlns:mvc="sap.ui.core.mvc"
+xmlns="sap.m">
+<App id="app">
+    <Page id = "scroll">
+    <content>
+                <Panel
+                id="simulationPanel"
+                headerText="Simulator"
+                visible="true"
+                expandable="true"
+                expanded="true"
+            >
+    <Label id="customer-name-label" text="Customer Name" labelFor="customer-name-field"/>
+                <Input id="customer-name-field" value="{context>/customerName}" editable="false"/>
+                <Label id="order-number-label" text="Order Number" labelFor="order-number-field"/>
+                <Input id="order-number-field" value="{context>/orderNumber}" editable="false"/>
+                <Label id="order-amount-label" text="Order Amount" labelFor="order-amount-field"/>
+                <Input id="order-amount-field" value="{context>/orderAmount}" editable="false"/>
+               
+        <Button id="click" type="Accept"
+            text="Click"
+            press="onClick">
+        </Button>
+         </Panel>
+        </content>
+    </Page>
+</App>
+</mvc:View>
